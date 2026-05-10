@@ -290,7 +290,7 @@
   <h3>✅ Please confirm your details</h3>
   <div id="summaryRows"></div>
   <button class="btn-submit" id="submitBtn">Submit Form ✅</button>
-  <button class="btn-edit" id="editBtn">✏️ Edit Details</button>
+  <button class="btn-edit" id="editBtn">🔄 Reset Form</button>
 </div>
 
 <!-- SUCCESS -->
@@ -731,8 +731,21 @@ function setupSpeech() {
       alert('Speech recognition not supported. Please use Chrome on Android.');
       return;
     }
-    if (steps[currentStep] && steps[currentStep].isDate) {
-      setStatus('Please use the date picker below for this question.');
+    const step = steps[currentStep] || {};
+    if (step.isDate) {
+      setStatus('Please use the date picker for this question.');
+      return;
+    }
+    if (step.key === 'mobile') {
+      setStatus('⌨️ Please type your mobile number.');
+      return;
+    }
+    if (step.key === 'state') {
+      setStatus('👆 Please tap a state from the options above.');
+      return;
+    }
+    if (step.key === 'model') {
+      setStatus('👆 Please tap a model from the options above.');
       return;
     }
     if (isListening) stopListening();
