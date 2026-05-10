@@ -305,7 +305,7 @@
 // ══════════════════════════════════════════
 // CONFIG
 // ══════════════════════════════════════════
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJhtDMuaDqg__HyLYboZamQ35o7IiDCrpqmpgMc9RB2e7EKb4pVZvJJVwkhxPtTpk/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxi5GXOxfrbpA0zQXZ9o45aVVOJZa9Qb2drVOeBIZGWd7UvZtFZwv3E5NLkpbw0MsTuCQ/exec";
 
 // ══════════════════════════════════════════
 // ALL INDIAN STATES & UTs
@@ -604,14 +604,22 @@ async function submitToSheets() {
   };
 
   try {
-    // Send as plain text — Google Apps Script accepts this with no-cors
-    const form = new FormData();
-    form.append('data', JSON.stringify(payload));
+    // Use GET with URL params — most reliable method with no-cors
+    const params = new URLSearchParams({
+      name:         payload.name,
+      mobile:       payload.mobile,
+      state:        payload.state,
+      district:     payload.district,
+      tehsil:       payload.tehsil,
+      village:      payload.village,
+      model:        payload.model,
+      purchaseDate: payload.purchaseDate,
+      timestamp:    payload.timestamp
+    });
 
-    await fetch(GOOGLE_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      body: form
+    await fetch(GOOGLE_SCRIPT_URL + '?' + params.toString(), {
+      method: 'GET',
+      mode: 'no-cors'
     });
     showSuccess();
   } catch(e) {
