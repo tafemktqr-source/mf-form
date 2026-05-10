@@ -388,13 +388,14 @@ const steps = [
   },
   {
     key: 'state',
-    question: '🗺️ Which <b>State</b> are you from?<br><small style="opacity:0.75">Tap a chip or type your state name</small>',
+    question: '🗺️ Which <b>State</b> are you from?<br><small style="opacity:0.75">👆 Tap your state below</small>',
     chips: ALL_STATES,
     inputMode: 'text',
     isDate: false,
+    isChipOnly: true,
     validate: v => {
       const found = ALL_STATES.find(s => s.toLowerCase() === v.trim().toLowerCase());
-      return found ? null : 'Please select or type a valid Indian state.';
+      return found ? null : 'Please tap a valid Indian state from the list.';
     },
     process: v => ALL_STATES.find(s => s.toLowerCase() === v.trim().toLowerCase()) || v.trim(),
     display: d => d
@@ -431,11 +432,12 @@ const steps = [
   },
   {
     key: 'model',
-    question: '🚜 Which <b>Massey Ferguson Model</b> are you interested in?<br><small style="opacity:0.75">Tap a model or speak / type its name</small>',
+    question: '🚜 Which <b>Massey Ferguson Model</b> are you interested in?<br><small style="opacity:0.75">👆 Tap your model below</small>',
     chips: MF_MODELS,
     inputMode: 'text',
     isDate: false,
-    validate: v => v.trim().length >= 2 ? null : 'Please select or type a model name.',
+    isChipOnly: true,
+    validate: v => v.trim().length >= 2 ? null : 'Please tap a model from the list.',
     process: v => v.trim(),
     display: d => d
   },
@@ -459,6 +461,7 @@ let formData = {};
 let recognition = null;
 let isListening = false;
 let speechSupported = false;
+let stopListeningGlobal = null;
 
 // ══════════════════════════════════════════
 // UI HELPERS
@@ -488,19 +491,40 @@ function setInputMode(step) {
   const inp = document.getElementById('userInput');
   const dateWrap = document.getElementById('datePicker');
   const inputRow = document.getElementById('inputRow');
+  const micBtn = document.getElementById('micBtn');
+
+  // Auto-stop mic whenever step changes
+  if (typeof stopListeningGlobal === 'function') stopListeningGlobal();
 
   if (step.isDate) {
+    // Date step — show calendar only
     dateWrap.style.display = 'block';
     inputRow.style.display = 'none';
-    // Set min date to today
+    micBtn.style.display = 'none';
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('dateInput').min = today;
     document.getElementById('dateInput').value = '';
-  } else {
+  } else if (step.isChipOnly) {
+    // Chip-only step — hide entire input row and mic
+    dateWrap.style.display = 'none';
+    inputRow.style.display = 'none';
+    micBtn.style.display = 'none';
+  } else if (step.key === 'mobile') {
+    // Mobile step — show input but hide mic
     dateWrap.style.display = 'none';
     inputRow.style.display = 'flex';
+    micBtn.style.display = 'none';
+    inp.inputMode = 'numeric';
+    inp.type = 'tel';
+    inp.value = '';
+    setTimeout(() => inp.focus(), 100);
+  } else {
+    // Normal text step — show input and mic
+    dateWrap.style.display = 'none';
+    inputRow.style.display = 'flex';
+    micBtn.style.display = 'flex';
     inp.inputMode = step.inputMode;
-    inp.type = step.inputMode === 'numeric' ? 'tel' : 'text';
+    inp.type = 'text';
     inp.value = '';
     setTimeout(() => inp.focus(), 100);
   }
@@ -725,6 +749,8 @@ function setupSpeech() {
       recognition.stop();
     }
   }
+  // Expose globally so setInputMode can auto-stop on step change
+  stopListeningGlobal = stopListening;
 
   micBtn.onclick = () => {
     if (!speechSupported) {
