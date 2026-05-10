@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Massey Ferguson Customer Form</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --red: #CC0000;
+    --darkred: #8B0000;
+    --gold: #FFB300;
+    --deep: #1A1035;
+    --green: #1A8C3E;
+    --card: #ffffff;
+    --muted: #7B7FA6;
+    --bg: #F5F0F0;
+    --radius: 18px;
+    --shadow: 0 8px 32px rgba(26,16,53,0.13);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Baloo 2', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 0 0 60px 0;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    width: 100%;
+    background: linear-gradient(135deg, #8B0000 0%, #CC0000 60%, #E8200A 100%);
+    padding: 18px 20px 14px;
+    text-align: center;
+    border-bottom: 4px solid var(--gold);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  }
+  .header-logo {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-bottom: 4px;
+  }
+  .mf-badge {
+    background: #fff; color: var(--red); font-weight: 800;
+    font-size: 1.1rem; padding: 4px 10px; border-radius: 6px;
+    letter-spacing: 1px; border: 2px solid var(--gold);
+  }
+  .header h1 {
+    color: #fff; font-size: 1.15rem; font-weight: 800;
+    letter-spacing: 0.3px; line-height: 1.3;
+  }
+  .header p { color: var(--gold); font-size: 0.8rem; margin-top: 3px; }
+
+  /* ── PROGRESS ── */
+  .progress-wrap {
+    width: 100%; max-width: 480px;
+    padding: 10px 14px 2px;
+  }
+  .progress-bar-bg {
+    height: 8px; background: #ddd; border-radius: 99px; overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--darkred), var(--gold));
+    border-radius: 99px;
+    transition: width 0.5s ease;
+  }
+  .progress-label {
+    font-size: 0.72rem; color: var(--muted); margin-top: 3px;
+    text-align: right;
+  }
+
+  /* ── CHAT ── */
+  .chat-container {
+    width: 100%; max-width: 480px;
+    padding: 14px 14px 8px;
+    display: flex; flex-direction: column; gap: 10px;
+    min-height: 120px;
+  }
+  .bubble {
+    max-width: 88%; padding: 11px 15px;
+    border-radius: 18px; font-size: 0.95rem; line-height: 1.55;
+    animation: popIn 0.28s ease;
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: translateY(8px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .bubble.bot {
+    background: var(--deep); color: #fff;
+    border-bottom-left-radius: 4px; align-self: flex-start;
+  }
+  .bubble.user {
+    background: var(--red); color: #fff;
+    border-bottom-right-radius: 4px; align-self: flex-end;
+    font-weight: 700;
+  }
+
+  /* ── INPUT ZONE ── */
+  .input-zone {
+    width: 100%; max-width: 480px;
+    padding: 8px 14px;
+    position: sticky; bottom: 0;
+    background: var(--bg);
+    border-top: 1px solid rgba(0,0,0,0.09);
+    z-index: 10;
+  }
+
+  /* Chips */
+  .chips {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    padding: 4px 0 6px; max-height: 120px; overflow-y: auto;
+  }
+  .chip {
+    background: #fff; border: 1.5px solid #d0cce8;
+    border-radius: 50px; padding: 5px 12px;
+    font-size: 0.8rem; cursor: pointer;
+    color: var(--deep); font-weight: 600;
+    transition: background 0.15s, border 0.15s;
+    white-space: nowrap;
+  }
+  .chip:hover, .chip:active {
+    background: var(--red); color: #fff; border-color: var(--red);
+  }
+
+  /* Date picker widget */
+  .date-picker-wrap {
+    background: #fff; border: 2px solid #d0cce8;
+    border-radius: 14px; padding: 12px 14px; margin-bottom: 8px;
+    display: none;
+  }
+  .date-picker-wrap label {
+    font-size: 0.78rem; color: var(--muted); display: block; margin-bottom: 4px;
+    font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px;
+  }
+  .date-picker-wrap input[type="date"] {
+    width: 100%; border: 1.5px solid #d0cce8; border-radius: 8px;
+    padding: 10px 12px; font-size: 1rem;
+    font-family: 'Baloo 2', sans-serif; outline: none;
+    color: var(--deep); background: #fafafa;
+  }
+  .date-picker-wrap input[type="date"]:focus { border-color: var(--red); }
+  .btn-date-confirm {
+    width: 100%; background: var(--red); color: #fff;
+    border: none; border-radius: 50px; padding: 11px;
+    font-size: 0.95rem; font-weight: 700;
+    font-family: 'Baloo 2', sans-serif; margin-top: 10px;
+    cursor: pointer;
+  }
+
+  /* Input row */
+  .input-row {
+    display: flex; gap: 8px; align-items: center;
+  }
+  .input-row input[type="text"],
+  .input-row input[type="tel"] {
+    flex: 1; border: 2px solid #d8d5ee;
+    border-radius: 50px; padding: 12px 16px;
+    font-size: 1rem; font-family: 'Baloo 2', sans-serif;
+    outline: none; background: #fff;
+    transition: border 0.2s;
+  }
+  .input-row input:focus { border-color: var(--red); }
+
+  .btn-send {
+    background: var(--red); color: #fff;
+    border: none; border-radius: 50px;
+    padding: 12px 18px; font-size: 0.95rem;
+    font-family: 'Baloo 2', sans-serif; font-weight: 700;
+    cursor: pointer; white-space: nowrap;
+    transition: background 0.2s, transform 0.1s;
+    flex-shrink: 0;
+  }
+  .btn-send:active { transform: scale(0.96); }
+
+  /* Mic button */
+  .btn-mic {
+    background: var(--deep); color: #fff;
+    border: none; border-radius: 50%; width: 48px; height: 48px;
+    font-size: 1.25rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, transform 0.1s;
+    flex-shrink: 0; position: relative;
+  }
+  .btn-mic.listening {
+    background: var(--red);
+    animation: pulse 0.8s infinite alternate;
+  }
+  .btn-mic.no-speech { opacity: 0.45; cursor: not-allowed; }
+  @keyframes pulse {
+    from { box-shadow: 0 0 0 0 rgba(204,0,0,0.5); }
+    to   { box-shadow: 0 0 0 14px rgba(204,0,0,0); }
+  }
+
+  .status-bar {
+    font-size: 0.76rem; color: var(--muted);
+    text-align: center; padding: 3px 0 2px; min-height: 18px;
+  }
+
+  /* ── SUMMARY CARD ── */
+  .summary-card {
+    width: 100%; max-width: 480px;
+    background: var(--card); border-radius: var(--radius);
+    box-shadow: var(--shadow); margin: 12px 14px;
+    padding: 20px 18px; display: none;
+  }
+  .summary-card h3 {
+    color: var(--deep); font-size: 1rem; margin-bottom: 12px; font-weight: 800;
+  }
+  .summary-row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    border-bottom: 1px dashed #e0ddf5; padding: 8px 0;
+    font-size: 0.88rem; gap: 10px;
+  }
+  .summary-row .sk { color: var(--muted); white-space: nowrap; flex-shrink: 0; }
+  .summary-row .sv { color: var(--deep); font-weight: 700; text-align: right; }
+  .btn-submit {
+    width: 100%; background: var(--green); color: #fff;
+    border: none; border-radius: 50px; padding: 14px;
+    font-size: 1.05rem; font-weight: 800;
+    font-family: 'Baloo 2', sans-serif; margin-top: 14px;
+    cursor: pointer; transition: transform 0.1s;
+  }
+  .btn-submit:active { transform: scale(0.98); }
+  .btn-edit {
+    width: 100%; background: transparent; color: var(--red);
+    border: 2px solid var(--red); border-radius: 50px;
+    padding: 11px; font-size: 0.92rem; font-weight: 700;
+    font-family: 'Baloo 2', sans-serif; margin-top: 8px;
+    cursor: pointer;
+  }
+
+  /* ── SUCCESS ── */
+  .success-screen {
+    display: none; flex-direction: column; align-items: center;
+    justify-content: center; padding: 40px 20px; text-align: center;
+    max-width: 480px;
+  }
+  .success-icon { font-size: 5rem; margin-bottom: 12px; }
+  .success-screen h2 { color: var(--deep); font-size: 1.3rem; font-weight: 800; }
+  .success-screen p { color: var(--muted); margin-top: 6px; font-size: 0.9rem; }
+  .btn-new {
+    margin-top: 22px; background: var(--red); color: #fff;
+    border: none; border-radius: 50px; padding: 13px 32px;
+    font-size: 1rem; font-weight: 700;
+    font-family: 'Baloo 2', sans-serif; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-logo">
+    <div class="mf-badge">MF</div>
+    <h1>Massey Ferguson<br>Customer Form</h1>
+  </div>
+  <p>🎤 Speak or Type — Fill in seconds</p>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-wrap">
+  <div class="progress-bar-bg">
+    <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">Step 0 of 8</div>
+</div>
+
+<!-- CHAT BUBBLES -->
+<div class="chat-container" id="chatContainer"></div>
+
+<!-- INPUT ZONE -->
+<div class="input-zone" id="inputZone">
+  <div class="chips" id="chipsRow"></div>
+  <div class="date-picker-wrap" id="datePicker">
+    <label>Select Expected Purchase Date</label>
+    <input type="date" id="dateInput" />
+    <button class="btn-date-confirm" id="dateConfirmBtn">Confirm Date ✅</button>
+  </div>
+  <div class="input-row" id="inputRow">
+    <button class="btn-mic" id="micBtn" title="Hold to speak">🎤</button>
+    <input type="text" id="userInput" placeholder="Type your answer..." autocomplete="off" inputmode="text" />
+    <button class="btn-send" id="sendBtn">Send</button>
+  </div>
+  <div class="status-bar" id="statusBar"></div>
+</div>
+
+<!-- SUMMARY -->
+<div class="summary-card" id="summaryCard">
+  <h3>✅ Please confirm your details</h3>
+  <div id="summaryRows"></div>
+  <button class="btn-submit" id="submitBtn">Submit Form ✅</button>
+  <button class="btn-edit" id="editBtn">✏️ Edit Details</button>
+</div>
+
+<!-- SUCCESS -->
+<div class="success-screen" id="successScreen">
+  <div class="success-icon">🚜</div>
+  <h2>Form Submitted!</h2>
+  <p>Thank you! Our Massey Ferguson team<br>will contact you shortly.</p>
+  <button class="btn-new" onclick="location.reload()">Fill Another Form</button>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJhtDMuaDqg__HyLYboZamQ35o7IiDCrpqmpgMc9RB2e7EKb4pVZvJJVwkhxPtTpk/exec";
+
+// ══════════════════════════════════════════
+// ALL INDIAN STATES & UTs
+// ══════════════════════════════════════════
+const ALL_STATES = [
+  "Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh",
+  "Goa","Gujarat","Haryana","Himachal Pradesh","Jharkhand","Karnataka",
+  "Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram",
+  "Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana",
+  "Tripura","Uttar Pradesh","Uttarakhand","West Bengal",
+  // Union Territories
+  "Andaman & Nicobar Islands","Chandigarh","Dadra & Nagar Haveli and Daman & Diu",
+  "Delhi","Jammu & Kashmir","Ladakh","Lakshadweep","Puducherry"
+];
+
+// ══════════════════════════════════════════
+// MASSEY FERGUSON MODELS
+// ══════════════════════════════════════════
+const MF_MODELS = [
+  "MF 5118","MF 6028","MF 1030","MF 241","MF 245",
+  "MF 245 SMART","MF 7250","MF 9000","MF 9500 SMART","MF 2635",
+  "MF 241 PM","MF 1035 DOST","MF 1035 MS","MF 7250 POWER",
+  "MF 241 DYNATRACK","MF 244 DYNATRACK","MF 246 DYNATRACK","MF 254 DYNATRACK",
+  "MF 241 SONA","MF 1035 SP/T","MF 241 PD","MF 245 -46 HP",
+  "MF 7235","MF 6026","MF 8055","MF 5225","MF 7052 L",
+  "244 PM","MF 244 DYNASMART","MF 246 DYNASMART","MF 254 DYNASMART",
+  "MF 1035 PS","MF 9563 SMART CRDI","MF 244 PD",
+  "MF 254 DYNASMART 4WD","MF 246 DYNASMART 4WD",
+  "MF 254 DYNATRACK 4WD","MF 244 DYNATRACK 4WD","MF 246 DYNATRACK 4WD",
+  "ORCHARD","OTHER"
+];
+
+// ══════════════════════════════════════════
+// TRANSLITERATION (Hindi → English)
+// ══════════════════════════════════════════
+function transliterate(text) {
+  const map = {
+    'अ':'a','आ':'aa','इ':'i','ई':'ee','उ':'u','ऊ':'oo','ए':'e','ऐ':'ai','ओ':'o','औ':'au',
+    'क':'k','ख':'kh','ग':'g','घ':'gh','च':'ch','छ':'chh','ज':'j','झ':'jh',
+    'ट':'t','ठ':'th','ड':'d','ढ':'dh','ण':'n','त':'t','थ':'th','द':'d','ध':'dh','न':'n',
+    'प':'p','फ':'ph','ब':'b','भ':'bh','म':'m','य':'y','र':'r','ल':'l','व':'v',
+    'श':'sh','ष':'sh','स':'s','ह':'h','ं':'n','ः':'h',
+    'ा':'a','ि':'i','ी':'ee','ु':'u','ू':'oo','े':'e','ै':'ai','ो':'o','ौ':'au','्':'',' ':' '
+  };
+  return text.split('').map(c => map[c] !== undefined ? map[c] : c).join('');
+}
+function toEnglishName(raw) {
+  let eng = transliterate(raw.trim());
+  return eng.replace(/\b\w/g, c => c.toUpperCase()).replace(/[^a-zA-Z\s'.\-]/g,'').trim();
+}
+function formatDateDisplay(isoDate) {
+  if (!isoDate) return '';
+  const d = new Date(isoDate + 'T00:00:00');
+  return d.toLocaleDateString('en-IN', { day:'2-digit', month:'long', year:'numeric' });
+}
+
+// ══════════════════════════════════════════
+// STEPS DEFINITION
+// ══════════════════════════════════════════
+const steps = [
+  {
+    key: 'name',
+    question: '👋 Welcome to <b>Massey Ferguson</b>!<br><br>Let\'s get started. What is your <b>Full Name</b>?',
+    chips: [],
+    inputMode: 'text',
+    isDate: false,
+    validate: v => v.trim().length >= 2 ? null : 'Please enter at least 2 characters.',
+    process: v => toEnglishName(v),
+    display: d => d
+  },
+  {
+    key: 'mobile',
+    question: '📱 Please enter your <b>Mobile Number</b>.<br><small style="opacity:0.75">(Only you need to type this)</small>',
+    chips: [],
+    inputMode: 'numeric',
+    isDate: false,
+    validate: v => /^[6-9]\d{9}$/.test(v.replace(/\s/g,'')) ? null : 'Enter a valid 10-digit Indian mobile number.',
+    process: v => v.replace(/\s/g,'').trim(),
+    display: d => d
+  },
+  {
+    key: 'state',
+    question: '🗺️ Which <b>State</b> are you from?<br><small style="opacity:0.75">Tap a chip or type your state name</small>',
+    chips: ALL_STATES,
+    inputMode: 'text',
+    isDate: false,
+    validate: v => {
+      const found = ALL_STATES.find(s => s.toLowerCase() === v.trim().toLowerCase());
+      return found ? null : 'Please select or type a valid Indian state.';
+    },
+    process: v => ALL_STATES.find(s => s.toLowerCase() === v.trim().toLowerCase()) || v.trim(),
+    display: d => d
+  },
+  {
+    key: 'district',
+    question: '🏙️ What is your <b>District</b>?',
+    chips: [],
+    inputMode: 'text',
+    isDate: false,
+    validate: v => v.trim().length >= 2 ? null : 'Please enter your district name.',
+    process: v => toEnglishName(v),
+    display: d => d
+  },
+  {
+    key: 'tehsil',
+    question: '🏘️ What is your <b>Tehsil / Taluka</b>?',
+    chips: [],
+    inputMode: 'text',
+    isDate: false,
+    validate: v => v.trim().length >= 2 ? null : 'Please enter your tehsil name.',
+    process: v => toEnglishName(v),
+    display: d => d
+  },
+  {
+    key: 'village',
+    question: '🌾 What is your <b>Village / Town</b>?',
+    chips: [],
+    inputMode: 'text',
+    isDate: false,
+    validate: v => v.trim().length >= 2 ? null : 'Please enter your village name.',
+    process: v => toEnglishName(v),
+    display: d => d
+  },
+  {
+    key: 'model',
+    question: '🚜 Which <b>Massey Ferguson Model</b> are you interested in?<br><small style="opacity:0.75">Tap a model or speak / type its name</small>',
+    chips: MF_MODELS,
+    inputMode: 'text',
+    isDate: false,
+    validate: v => v.trim().length >= 2 ? null : 'Please select or type a model name.',
+    process: v => v.trim(),
+    display: d => d
+  },
+  {
+    key: 'purchaseDate',
+    question: '📅 When do you plan to <b>buy the tractor</b>?<br><small style="opacity:0.75">Pick a date from the calendar below</small>',
+    chips: [],
+    inputMode: 'text',
+    isDate: true,
+    validate: v => v && v.length >= 6 ? null : 'Please select a purchase date.',
+    process: v => v,
+    display: d => formatDateDisplay(d)
+  }
+];
+
+// ══════════════════════════════════════════
+// STATE VARIABLES
+// ══════════════════════════════════════════
+let currentStep = 0;
+let formData = {};
+let recognition = null;
+let isListening = false;
+let speechSupported = false;
+
+// ══════════════════════════════════════════
+// UI HELPERS
+// ══════════════════════════════════════════
+function addBubble(html, type = 'bot') {
+  const chat = document.getElementById('chatContainer');
+  const b = document.createElement('div');
+  b.className = 'bubble ' + type;
+  b.innerHTML = html;
+  chat.appendChild(b);
+  setTimeout(() => chat.scrollTop = chat.scrollHeight, 50);
+}
+
+function setChips(chips) {
+  const row = document.getElementById('chipsRow');
+  row.innerHTML = '';
+  chips.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'chip';
+    btn.textContent = c;
+    btn.onclick = () => submitAnswer(c);
+    row.appendChild(btn);
+  });
+}
+
+function setInputMode(step) {
+  const inp = document.getElementById('userInput');
+  const dateWrap = document.getElementById('datePicker');
+  const inputRow = document.getElementById('inputRow');
+
+  if (step.isDate) {
+    dateWrap.style.display = 'block';
+    inputRow.style.display = 'none';
+    // Set min date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('dateInput').min = today;
+    document.getElementById('dateInput').value = '';
+  } else {
+    dateWrap.style.display = 'none';
+    inputRow.style.display = 'flex';
+    inp.inputMode = step.inputMode;
+    inp.type = step.inputMode === 'numeric' ? 'tel' : 'text';
+    inp.value = '';
+    setTimeout(() => inp.focus(), 100);
+  }
+}
+
+function updateProgress() {
+  const pct = Math.round((currentStep / steps.length) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `Step ${currentStep} of ${steps.length}`;
+}
+
+function setStatus(msg, color) {
+  const bar = document.getElementById('statusBar');
+  bar.textContent = msg;
+  bar.style.color = color || 'var(--muted)';
+}
+
+// ══════════════════════════════════════════
+// FORM FLOW
+// ══════════════════════════════════════════
+function askStep(idx) {
+  if (idx >= steps.length) { showSummary(); return; }
+  const s = steps[idx];
+  setTimeout(() => {
+    addBubble(s.question, 'bot');
+    setChips(s.chips);
+    setInputMode(s);
+    updateProgress();
+  }, 320);
+}
+
+function submitAnswer(raw) {
+  if (currentStep >= steps.length) return;
+  const s = steps[currentStep];
+  const val = typeof raw === 'string' ? raw.trim() : raw;
+  const err = s.validate(val);
+  if (err) {
+    addBubble('⚠️ ' + err, 'bot');
+    setStatus('');
+    return;
+  }
+  const processed = s.process(val);
+  formData[s.key] = processed;
+  addBubble(s.display(processed), 'user');
+  currentStep++;
+  updateProgress();
+  askStep(currentStep);
+  document.getElementById('userInput').value = '';
+  setStatus('');
+}
+
+function handleSend() {
+  const val = document.getElementById('userInput').value.trim();
+  if (!val) return;
+  submitAnswer(val);
+}
+
+// ══════════════════════════════════════════
+// SUMMARY
+// ══════════════════════════════════════════
+const LABELS = {
+  name: 'Full Name', mobile: 'Mobile Number', state: 'State',
+  district: 'District', tehsil: 'Tehsil', village: 'Village',
+  model: 'MF Model', purchaseDate: 'Expected Purchase Date'
+};
+
+function showSummary() {
+  document.getElementById('inputZone').style.display = 'none';
+  const card = document.getElementById('summaryCard');
+  card.style.display = 'block';
+  const rows = document.getElementById('summaryRows');
+  rows.innerHTML = '';
+  Object.entries(LABELS).forEach(([k, label]) => {
+    const val = k === 'purchaseDate' ? formatDateDisplay(formData[k]) : (formData[k] || '—');
+    const row = document.createElement('div');
+    row.className = 'summary-row';
+    row.innerHTML = `<span class="sk">${label}</span><span class="sv">${val}</span>`;
+    rows.appendChild(row);
+  });
+  card.scrollIntoView({ behavior: 'smooth' });
+}
+
+// ══════════════════════════════════════════
+// SUBMIT TO GOOGLE SHEETS
+// ══════════════════════════════════════════
+async function submitToSheets() {
+  const btn = document.getElementById('submitBtn');
+  btn.textContent = '⏳ Submitting...';
+  btn.disabled = true;
+
+  const payload = {
+    name:         formData.name || '',
+    mobile:       formData.mobile || '',
+    state:        formData.state || '',
+    district:     formData.district || '',
+    tehsil:       formData.tehsil || '',
+    village:      formData.village || '',
+    model:        formData.model || '',
+    purchaseDate: formData.purchaseDate || '',
+    timestamp:    new Date().toISOString()
+  };
+
+  try {
+    await fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    showSuccess();
+  } catch(e) {
+    btn.textContent = '❌ Failed — Retry';
+    btn.disabled = false;
+    alert('Network error. Please check your internet and try again.');
+  }
+}
+
+function showSuccess() {
+  document.getElementById('summaryCard').style.display = 'none';
+  const s = document.getElementById('successScreen');
+  s.style.display = 'flex';
+  s.scrollIntoView({ behavior: 'smooth' });
+}
+
+// ══════════════════════════════════════════
+// SPEECH RECOGNITION — FIXED & ROBUST
+// ══════════════════════════════════════════
+function setupSpeech() {
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const micBtn = document.getElementById('micBtn');
+
+  if (!SpeechRec) {
+    micBtn.classList.add('no-speech');
+    micBtn.title = 'Speech not supported. Use Chrome browser.';
+    setStatus('⚠️ Mic not supported — please use Chrome on Android', '#CC0000');
+    return;
+  }
+
+  speechSupported = true;
+
+  function createRecognition(lang) {
+    const rec = new SpeechRec();
+    rec.continuous = false;
+    rec.interimResults = true;
+    rec.maxAlternatives = 1;
+    rec.lang = lang;
+    return rec;
+  }
+
+  function startListening() {
+    if (isListening) return;
+
+    const step = steps[currentStep] || {};
+    // Number step → English so digits are recognized; all others → Hindi+English
+    const lang = step.inputMode === 'numeric' ? 'en-IN' : 'hi-IN';
+    recognition = createRecognition(lang);
+
+    recognition.onstart = () => {
+      isListening = true;
+      micBtn.classList.add('listening');
+      setStatus('🎤 Listening… speak now', 'var(--red)');
+    };
+
+    recognition.onresult = (e) => {
+      let interim = '', final = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const t = e.results[i][0].transcript;
+        if (e.results[i].isFinal) final += t;
+        else interim += t;
+      }
+      const heard = final || interim;
+      document.getElementById('userInput').value = heard;
+      setStatus('Heard: ' + heard, 'var(--deep)');
+    };
+
+    recognition.onend = () => {
+      isListening = false;
+      micBtn.classList.remove('listening');
+      const val = document.getElementById('userInput').value.trim();
+      if (val) {
+        setStatus('');
+        submitAnswer(val);
+      } else {
+        setStatus('Nothing heard — tap mic and try again');
+      }
+    };
+
+    recognition.onerror = (e) => {
+      isListening = false;
+      micBtn.classList.remove('listening');
+      if (e.error === 'not-allowed') {
+        setStatus('❌ Mic permission denied — allow mic in browser settings', '#CC0000');
+      } else if (e.error === 'no-speech') {
+        setStatus('No speech detected — try again');
+      } else {
+        setStatus('Mic error: ' + e.error);
+      }
+    };
+
+    try {
+      recognition.start();
+    } catch(ex) {
+      isListening = false;
+      micBtn.classList.remove('listening');
+      setStatus('Could not start mic: ' + ex.message);
+    }
+  }
+
+  function stopListening() {
+    if (recognition && isListening) {
+      recognition.stop();
+    }
+  }
+
+  micBtn.onclick = () => {
+    if (!speechSupported) {
+      alert('Speech recognition not supported. Please use Chrome on Android.');
+      return;
+    }
+    if (steps[currentStep] && steps[currentStep].isDate) {
+      setStatus('Please use the date picker below for this question.');
+      return;
+    }
+    if (isListening) stopListening();
+    else startListening();
+  };
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+document.getElementById('sendBtn').onclick = handleSend;
+document.getElementById('userInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') handleSend();
+});
+document.getElementById('dateConfirmBtn').onclick = () => {
+  const dateVal = document.getElementById('dateInput').value;
+  if (!dateVal) { setStatus('Please pick a date first.'); return; }
+  submitAnswer(dateVal);
+};
+document.getElementById('submitBtn').onclick = submitToSheets;
+document.getElementById('editBtn').onclick = () => {
+  document.getElementById('summaryCard').style.display = 'none';
+  document.getElementById('inputZone').style.display = 'block';
+  currentStep = 0;
+  formData = {};
+  document.getElementById('chatContainer').innerHTML = '';
+  askStep(0);
+  updateProgress();
+};
+
+setupSpeech();
+askStep(0);
+</script>
+</body>
+</html>
